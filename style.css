@@ -1,0 +1,296 @@
+/* ============================================
+   Aplikasi Catatan Uang Kas Kelas
+   Stylesheet Utama
+   ============================================ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+    color: #333;
+}
+
+/* ---- Header ---- */
+.header {
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 20px 30px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+.header h1 {
+    color: #fff;
+    font-size: 1.6rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.header .subtitle {
+    color: rgba(255,255,255,0.8);
+    font-size: 0.85rem;
+    margin-top: 4px;
+}
+
+/* ---- Kartu Statistik ---- */
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+
+.stat-card:hover { transform: translateY(-3px); }
+.stat-card .stat-icon { font-size: 2rem; margin-bottom: 8px; }
+.stat-card .stat-value { font-size: 1.4rem; font-weight: 700; color: #5a3e9b; }
+.stat-card .stat-label { font-size: 0.8rem; color: #888; margin-top: 4px; }
+
+/* ---- Container Konten ---- */
+.container {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    overflow: hidden;
+    margin-bottom: 24px;
+}
+
+.container-header {
+    background: linear-gradient(90deg, #5a3e9b, #764ba2);
+    color: #fff;
+    padding: 16px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.container-body { padding: 24px; }
+
+/* ---- Form ---- */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+}
+
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+
+.form-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #555;
+}
+
+.form-group input {
+    padding: 10px 14px;
+    border: 2px solid #e8e8e8;
+    border-radius: 9px;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: #fafafa;
+}
+
+.form-group input:focus {
+    border-color: #764ba2;
+    box-shadow: 0 0 0 3px rgba(118,75,162,0.12);
+    background: #fff;
+}
+
+.form-actions {
+    margin-top: 18px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* ---- Tombol ---- */
+.btn {
+    padding: 10px 22px;
+    border: none;
+    border-radius: 9px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #5a3e9b, #764ba2);
+    color: #fff;
+}
+.btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+
+.btn-warning {
+    background: linear-gradient(135deg, #f7971e, #ffd200);
+    color: #333;
+}
+.btn-warning:hover { opacity: 0.88; transform: translateY(-1px); }
+
+.btn-danger {
+    background: linear-gradient(135deg, #e53935, #c62828);
+    color: #fff;
+}
+.btn-danger:hover { opacity: 0.88; }
+
+.btn-secondary {
+    background: #e8e8e8;
+    color: #555;
+}
+.btn-secondary:hover { background: #d5d5d5; }
+
+.btn-sm {
+    padding: 6px 14px;
+    font-size: 0.8rem;
+    border-radius: 7px;
+}
+
+/* ---- Pencarian ---- */
+.search-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.search-bar input {
+    flex: 1;
+    min-width: 220px;
+    padding: 9px 14px;
+    border: 2px solid #e8e8e8;
+    border-radius: 9px;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+.search-bar input:focus { border-color: #764ba2; }
+
+/* ---- Tabel ---- */
+.table-wrapper { overflow-x: auto; }
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+thead th {
+    background: #f0ecfa;
+    color: #5a3e9b;
+    font-weight: 700;
+    padding: 12px 14px;
+    text-align: left;
+    white-space: nowrap;
+    border-bottom: 2px solid #d4c8f5;
+}
+
+tbody tr { transition: background 0.15s; }
+tbody tr:nth-child(even) { background: #fafafa; }
+tbody tr:hover { background: #f4f0fd; }
+
+tbody td {
+    padding: 11px 14px;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: middle;
+}
+
+/* ---- Badge ---- */
+.badge-no {
+    background: #ede9fb;
+    color: #5a3e9b;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 0.82rem;
+}
+
+.nominal-cell {
+    font-weight: 600;
+    color: #2e7d32;
+}
+
+/* ---- Alert ---- */
+.alert {
+    padding: 12px 18px;
+    border-radius: 10px;
+    margin-bottom: 18px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.alert-success { background: #e8f5e9; color: #2e7d32; border-left: 4px solid #43a047; }
+.alert-danger  { background: #ffebee; color: #c62828; border-left: 4px solid #e53935; }
+.alert-info    { background: #e3f2fd; color: #1565c0; border-left: 4px solid #1e88e5; }
+
+/* ---- Pagination ---- */
+.pagination {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin-top: 18px;
+    flex-wrap: wrap;
+}
+
+.page-link {
+    padding: 7px 13px;
+    border-radius: 7px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    background: #f0ecfa;
+    color: #5a3e9b;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+}
+.page-link:hover, .page-link.active {
+    background: #5a3e9b;
+    color: #fff;
+}
+
+/* ---- Footer ---- */
+.footer {
+    text-align: center;
+    color: rgba(255,255,255,0.7);
+    font-size: 0.82rem;
+    padding: 10px;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 600px) {
+    body { padding: 12px; }
+    .header h1 { font-size: 1.2rem; }
+    .container-body { padding: 14px; }
+    .form-grid { grid-template-columns: 1fr; }
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+}

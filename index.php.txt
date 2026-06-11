@@ -1,0 +1,155 @@
+<?php
+// ============================================
+// index.php — Halaman Utama (Daftar Kas)
+// Aplikasi Catatan Uang Kas Kelas
+// Nama: Brandon Wadley V
+// ============================================
+require_once 'koneksi.php';
+
+// ---- Hapus data ----
+if (isset($_GET['hapus'])) {
+    $id = (int) $_GET['hapus'];
+    $stmt = $conn->prepare("DELETE FROM kas WHERE id = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $stmt->close();
+    header("Location: index.php?pesan=hapus");
+    exit;
+}
+
+// ---- Pencarian & Pagination ----
+$cari    = isset($_GET['cari']) ? $conn->real_escape_string(trim($_GET['cari'])) : '';
+$perHal  = 8;
+$halaman = isset($_GET['hal']) ? max(1, (int)$_GET['hal']) : 1;
+$offset  = ($halaman - 1) * $perHal;
+
+$where = $cari ? "WHERE nis LIKE '%$cari%' OR nama_siswa LIKE '%$cari%'" : '';
+
+$total = $conn->query("SELECT COUNT(*) FROM kas $where")->fetch_row()[0];
+$totalHal = ceil($total / $perHal);
+
+$hasil = $conn->query("SELECT * FROM kas $where ORDER BY tanggal_setor DESC, id DESC LIMIT $perHal OFFSET $offset");
+
+// ---- Statistik ----
+$stats   = $conn->query("SELECT COUNT(*) as jml, SUM(nominal) as total FROM kas")->fetch_assoc();
+$bulanIni = $conn->query("SELECT SUM(nominal) as total FROM kas WHERE MONTH(tanggal_setor)=MONTH(NOW()) AND YEAR(tanggal_setor)=YEAR(NOW())")->fetch_assoc();
+?>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catatan Uang Kas Kelas</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+    <div>
+        <h1>💰 Catatan Uang Kas Kelas</h1>
+        <div class="subtitle">Kelola pencatatan pembayaran kas siswa</div>
+    </div>
+    <a href="tambah.php" class="btn btn-primary">＋ Tambah Data</a>
+</div>
+
+<!-- Statistik -->
+<div class="stats-row">
+    <div class="stat-card">
+        <div class="stat-icon">👥</div>
+        <div class="stat-value"><?= number_format($stats['jml']) ?></div>
+        <div class="stat-label">Total Setoran</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">💵</div>
+        <div class="stat-value">Rp <?= number_format($stats['total'] ?? 0, 0, ',', '.') ?></div>
+        <div class="stat-label">Total Kas Terkumpul</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">📅</div>
+        <div class="stat-value">Rp <?= number_format($bulanIni['total'] ?? 0, 0, ',', '.') ?></div>
+        <div class="stat-label">Kas Bulan Ini</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">📋</div>
+        <div class="stat-value"><?= $totalHal ?></div>
+        <div class="stat-label">Halaman Data</div>
+    </div>
+</div>
+
+<!-- Notifikasi -->
+<?php if (isset($_GET['pesan'])): ?>
+    <?php $pesanMap = [
+        'tambah' => ['✅ Data kas berhasil ditambahkan.', 'success'],
+        'ubah'   => ['✏️ Data kas berhasil diperbarui.', 'success'],
+        'hapus'  => ['🗑️ Data kas berhasil dihapus.', 'danger'],
+    ]; ?>
+    <?php if (isset($pesanMap[$_GET['pesan']])): [$teks, $tipe] = $pesanMap[$_GET['pesan']]; ?>
+        <div class="alert alert-<?= $tipe ?>"><?= $teks ?></div>
+    <?php endif; ?>
+<?php endif; ?>
+
+<!-- Tabel Data -->
+<div class="container">
+    <div class="container-header">📋 Daftar Setoran Kas</div>
+    <div class="container-body">
+
+        <!-- Search -->
+        <form method="GET" class="search-bar">
+            <input type="text" name="cari" placeholder="🔍 Cari NIS atau nama siswa..." value="<?= htmlspecialchars($cari) ?>">
+            <button class="btn btn-primary" type="submit">Cari</button>
+            <?php if ($cari): ?><a href="index.php" class="btn btn-secondary">Reset</a><?php endif; ?>
+        </form>
+
+        <?php if ($total == 0): ?>
+            <div class="alert alert-info">📂 Belum ada data yang ditemukan.</div>
+        <?php else: ?>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>NIS</th>
+                        <th>Nama Siswa</th>
+                        <th>Nominal</th>
+                        <th>Tanggal Setor</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php $no = $offset + 1; while ($row = $hasil->fetch_assoc()): ?>
+                    <tr>
+                        <td><span class="badge-no"><?= $no++ ?></span></td>
+                        <td><?= htmlspecialchars($row['nis']) ?></td>
+                        <td><?= htmlspecialchars($row['nama_siswa']) ?></td>
+                        <td class="nominal-cell">Rp <?= number_format($row['nominal'], 0, ',', '.') ?></td>
+                        <td><?= date('d F Y', strtotime($row['tanggal_setor'])) ?></td>
+                        <td>
+                            <a href="edit.php?id=<?= $row['id'] ?>" class="btn btn-warning btn-sm">✏️ Edit</a>
+                            <a href="index.php?hapus=<?= $row['id'] ?>" class="btn btn-danger btn-sm"
+                               onclick="return confirm('Yakin ingin menghapus data <?= htmlspecialchars(addslashes($row['nama_siswa'])) ?>?')">🗑️ Hapus</a>
+                        </td>
+                    </tr>
+                    <?php endwhile; ?>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <?php if ($totalHal > 1): ?>
+        <div class="pagination">
+            <?php for ($i = 1; $i <= $totalHal; $i++): ?>
+                <a href="?hal=<?= $i ?>&cari=<?= urlencode($cari) ?>"
+                   class="page-link <?= $i == $halaman ? 'active' : '' ?>"><?= $i ?></a>
+            <?php endfor; ?>
+        </div>
+        <?php endif; ?>
+        <?php endif; ?>
+
+    </div>
+</div>
+
+<div class="footer">Aplikasi Catatan Uang Kas Kelas &mdash; Brandon Wadley V</div>
+
+</body>
+</html>

@@ -1,0 +1,95 @@
+<?php
+// ============================================
+// tambah.php — Form Tambah Data Kas
+// ============================================
+require_once 'koneksi.php';
+
+$error = [];
+$nis = $nama = $nominal = $tanggal = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nis      = trim($_POST['nis'] ?? '');
+    $nama     = trim($_POST['nama_siswa'] ?? '');
+    $nominal  = trim($_POST['nominal'] ?? '');
+    $tanggal  = trim($_POST['tanggal_setor'] ?? '');
+
+    // Validasi
+    if (empty($nis))     $error[] = 'NIS wajib diisi.';
+    if (empty($nama))    $error[] = 'Nama siswa wajib diisi.';
+    if (empty($nominal) || !is_numeric($nominal) || $nominal <= 0)
+                         $error[] = 'Nominal harus berupa angka positif.';
+    if (empty($tanggal)) $error[] = 'Tanggal setor wajib diisi.';
+
+    if (empty($error)) {
+        $stmt = $conn->prepare("INSERT INTO kas (nis, nama_siswa, nominal, tanggal_setor) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("ssds", $nis, $nama, $nominal, $tanggal);
+        $stmt->execute();
+        $stmt->close();
+        header("Location: index.php?pesan=tambah");
+        exit;
+    }
+}
+?>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tambah Data Kas</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="header">
+    <div>
+        <h1>➕ Tambah Data Kas</h1>
+        <div class="subtitle">Masukkan data setoran kas baru</div>
+    </div>
+    <a href="index.php" class="btn btn-secondary">← Kembali</a>
+</div>
+
+<!-- Error -->
+<?php if (!empty($error)): ?>
+    <?php foreach ($error as $e): ?>
+        <div class="alert alert-danger">⚠️ <?= htmlspecialchars($e) ?></div>
+    <?php endforeach; ?>
+<?php endif; ?>
+
+<div class="container">
+    <div class="container-header">📝 Form Data Kas Baru</div>
+    <div class="container-body">
+        <form method="POST">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="nis">NIS (Nomor Induk Siswa)</label>
+                    <input type="text" id="nis" name="nis" placeholder="Contoh: 2301001"
+                           value="<?= htmlspecialchars($nis) ?>" required>
+                </div>
+                <div class="form-group">
+                    <label for="nama_siswa">Nama Siswa</label>
+                    <input type="text" id="nama_siswa" name="nama_siswa" placeholder="Nama lengkap siswa"
+                           value="<?= htmlspecialchars($nama) ?>" required>
+                </div>
+                <div class="form-group">
+                    <label for="nominal">Nominal (Rp)</label>
+                    <input type="number" id="nominal" name="nominal" placeholder="Contoh: 10000"
+                           value="<?= htmlspecialchars($nominal) ?>" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="tanggal_setor">Tanggal Setor</label>
+                    <input type="date" id="tanggal_setor" name="tanggal_setor"
+                           value="<?= $tanggal ?: date('Y-m-d') ?>" required>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">💾 Simpan Data</button>
+                <a href="index.php" class="btn btn-secondary">✖ Batal</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="footer">Aplikasi Catatan Uang Kas Kelas &mdash; Brandon Wadley V</div>
+
+</body>
+</html>

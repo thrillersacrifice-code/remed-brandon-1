@@ -1,0 +1,21 @@
+<?php
+// ============================================
+// Konfigurasi Koneksi Database
+// ============================================
+
+define('DB_HOST', 'localhost');
+define('DB_USER', 'root');
+define('DB_PASS', '');
+define('DB_NAME', 'kas_kelas');
+
+$conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+
+if ($conn->connect_error) {
+    die("<div style='color:red; padding:20px; font-family:sans-serif;'>
+        ❌ Koneksi database gagal: " . $conn->connect_error . "
+        <br><small>Pastikan MySQL aktif dan database sudah diimport.</small>
+    </div>");
+}
+
+$conn->set_charset("utf8mb4");
+?>
